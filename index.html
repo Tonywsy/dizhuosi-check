@@ -258,7 +258,7 @@ var Fr={},Gr={};var Wr,Hr=function(){function t(t,e,n){var i=this;this._sleepAft
 var C={teal:'#0f8a7e',blue:'#2a6fb8',amber:'#e08a1e',red:'#d63a4e',green:'#2f9e5c',grey:'#9aa7b3',slate:'#7c8b9a',ink:'#1c2530',ink2:'#5a6875'};
 var F={fontFamily:'-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif'};
 var charts=[];
-function mk(id,opt){var el=document.getElementById(id);var ch=echarts.init(el);ch.setOption(opt);charts.push(ch);return ch;}
+function mk(id,opt){try{var el=document.getElementById(id);var ch=echarts.init(el);ch.setOption(opt);charts.push(ch);return ch;}catch(e){console.error('chart fail: '+id+' -> '+e.message);return null;}}
 window.addEventListener('resize',function(){charts.forEach(function(c){c.resize();});});
 
 /* 1 gauge */
@@ -324,10 +324,9 @@ mk('c_time',{
     data:[[2004,0],[2028,0]],z:1
   },{
     type:'scatter',symbolSize:function(d){return 20;},z:3,
-    data:tl.map(function(t,i){return {value:[t.x,i%2===0?0.42:-0.42],name:t.name,desc:t.desc,itemStyle:{color:t.c,borderColor:'#fff',borderWidth:3}};}),
-    label:{show:true,position:'top',distance:11,fontSize:11.5,fontWeight:600,color:C.ink,
-      formatter:function(p){return p.data.name;},align:'center'},
-    labelLayout:function(p){return {verticalAlign:(p.data.value[1]>0?'bottom':'top'),dy:(p.data.value[1]>0?-4:4),hideOverlap:true};}
+    data:tl.map(function(t,i){return {value:[t.x,i%2===0?0.42:-0.42],name:t.name,desc:t.desc,itemStyle:{color:t.c,borderColor:'#fff',borderWidth:3},label:{position:(i%2===0?'top':'bottom')}};}),
+    label:{show:true,distance:11,fontSize:11.5,fontWeight:600,color:C.ink,
+      formatter:function(p){return (p.data&&p.data.name)?p.data.name:'';},align:'center'}
   }]
 });
 
@@ -337,7 +336,7 @@ mk('c_year',{
   tooltip:{trigger:'axis',axisPointer:{type:'shadow'},formatter:function(p){var d=p[0];return '<b>'+d.name+'</b><br/>支持年份：'+d.value;}},
   xAxis:{type:'category',data:['官方 NPN 许可库','CrustData / HMA','官网 Our Story','十大品牌网','买购网','百科类词条'],
     axisLine:{lineStyle:{color:'#dfe5ea'}},axisTick:{show:false},axisLabel:{interval:0,fontSize:11,color:C.ink2,width:82,overflow:'break',lineHeight:14}},
-  yAxis:{type:'value',min:1980,max:2012,interval:8,axisLabel:{formatter:'{value}',color:C.ink3,fontSize:11},splitLine:{lineStyle:{color:'#eef2f5'}}},
+  yAxis:{type:'value',min:1980,max:2012,interval:8,axisLabel:{formatter:function(v){return String(v);},color:C.ink3,fontSize:11},splitLine:{lineStyle:{color:'#eef2f5'}}},
   series:[{
     type:'bar',barWidth:'42%',
     data:[
@@ -386,7 +385,7 @@ mk('c_fact',{
      label:{show:false}},
     {type:'scatter',symbolSize:15,z:4,
      data:db.map(function(d,i){return {value:[d.v,i],n:d.n,v:d.v,s:d.s,itemStyle:{color:SC[d.s],borderColor:'#fff',borderWidth:2},label:{color:SC[d.s]}};}),
-     label:{show:true,position:'right',distance:6,fontSize:11,fontWeight:700,
+     label:{show:true,position:'right',distance:7,fontSize:11,fontWeight:700,textBorderColor:'#ffffff',textBorderWidth:3,
        formatter:function(p){return p.data.s;}}}
   ]
 });
